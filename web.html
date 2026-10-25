@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - Catatan Keuangan Rumah Tangga</title>
+    <link rel="stylesheet" href="web.css">
+</head>
+<body>
+
+    <!-- BAGIAN HEADER & NAVIGASI -->
+    <header class="main-header">
+        <div class="header-content">
+            <h1>🏠 Keuangan Rumah Tangga</h1>
+            <p>Sistem Informasi Pencatatan Pemasukan & Pengeluaran Keluarga</p>
+            <small id="info-user" class="user-badge"></small>
+        </div>
+        
+        <nav class="navbar">
+            <button class="nav-btn active" id="btn-dashboard" onclick="pindahHalaman('dashboard')">📊 Beranda</button>
+            <button class="nav-btn" id="btn-input" onclick="pindahHalaman('input')">➕ Tambah Data</button>
+            <button class="nav-btn" id="btn-riwayat" onclick="pindahHalaman('riwayat')">📋 Riwayat & DB</button>
+            <!-- Tombol Keluar langsung mengarah ke file logout.html -->
+            <a href="logout.html" class="nav-btn logout-btn" onclick="return confirm('Yakin ingin keluar dari aplikasi?')">🚪 Keluar</a>
+        </nav>
+    </header>
+
+    <!-- BAGIAN UTAMA -->
+    <main class="container">
+
+        <!-- HALAMAN 1: BERANDA / DASHBOARD -->
+        <section id="halaman-dashboard" class="halaman">
+            <h2>Ringkasan Keuangan Keluarga</h2>
+
+            <div class="balance-card">
+                <h4>Total Sisa Saldo Rumah Tangga</h4>
+                <h1 id="balance">Rp 0</h1>
+            </div>
+
+            <div class="summary-box">
+                <div class="income-card">
+                    <h4>Total Pemasukan</h4>
+                    <p id="total-masuk">Rp 0</p>
+                </div>
+                <div class="expense-card">
+                    <h4>Total Pengeluaran</h4>
+                    <p id="total-keluar">Rp 0</p>
+                </div>
+            </div>
+
+            <div class="card-section">
+                <h3>Rincian Pengeluaran Rumah Tangga</h3>
+                <ul id="rekap-kategori" class="category-list"></ul>
+            </div>
+        </section>
+
+        <!-- HALAMAN 2: FORM TAMBAH TRANSAKSI -->
+        <section id="halaman-input" class="halaman sembunyi">
+            <h2>Catat Transaksi Rumah Tangga</h2>
+            
+            <form id="form">
+                <div class="form-control">
+                    <label for="tanggal">Tanggal Transaksi</label>
+                    <input type="date" id="tanggal" required />
+                </div>
+
+                <div class="form-control">
+                    <label for="jenis">Jenis Transaksi</label>
+                    <select id="jenis" required>
+                        <option value="pemasukan">Pemasukan (+)</option>
+                        <option value="pengeluaran">Pengeluaran (-)</option>
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label for="kategori">Kategori Kebutuhan</label>
+                    <select id="kategori" required>
+                        <option value="Gaji / Penghasilan">💵 Gaji / Penghasilan Keluarga</option>
+                        <option value="Belanja Dapur">🛒 Belanja Dapur & Sembako</option>
+                        <option value="Tagihan Listrik & Air">💡 Tagihan Listrik, Air & Internet</option>
+                        <option value="Pendidikan Anak">📚 Kebutuhan & Pendidikan Anak</option>
+                        <option value="Kesehatan & Darurat">💊 Kesehatan & Dana Darurat</option>
+                        <option value="Lain-lain">📦 Kebutuhan Rumah Tangga Lainnya</option>
+                    </select>
+                </div>
+
+                <div class="form-control">
+                    <label for="text">Keterangan Detail</label>
+                    <input type="text" id="text" placeholder="Contoh: Beli Beras 10kg & Minyak Goreng" required />
+                </div>
+
+                <div class="form-control">
+                    <label for="amount">Jumlah Uang (Rp)</label>
+                    <input type="number" id="amount" placeholder="Contoh: 150000" min="1" required />
+                    <small>*Cukup ketik angkanya saja tanpa titik atau tanda minus.</small>
+                </div>
+
+                <button type="submit" class="btn">Simpan ke Database</button>
+            </form>
+        </section>
+
+        <!-- HALAMAN 3: RIWAYAT TRANSAKSI -->
+        <section id="halaman-riwayat" class="halaman sembunyi">
+            <h2>Riwayat Catatan Keuangan</h2>
+
+            <div class="filter-box">
+                <label for="filter-kategori">Filter Kategori:</label>
+                <select id="filter-kategori" onchange="tampilkanTampilan()">
+                    <option value="Semua">Semua Kategori</option>
+                    <option value="Gaji / Penghasilan">Gaji / Penghasilan</option>
+                    <option value="Belanja Dapur">Belanja Dapur</option>
+                    <option value="Tagihan Listrik & Air">Tagihan Listrik & Air</option>
+                    <option value="Pendidikan Anak">Pendidikan Anak</option>
+                    <option value="Kesehatan & Darurat">Kesehatan & Darurat</option>
+                    <option value="Lain-lain">Lain-lain</option>
+                </select>
+            </div>
+
+            <ul id="list" class="list"></ul>
+        </section>
+
+    </main>
+
+    <!-- BAGIAN FOOTER -->
+    <footer class="main-footer">
+        <p>&copy; 2026 Aplikasi Catatan Keuangan Rumah Tangga</p>
+        <small>Penyimpanan Terhubung: LocalStorage Browser Database (web.html)</small>
+    </footer>
+
+    <script src="web.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Keuangan Rumah Tangga</title>
+    <link rel="stylesheet" href="web.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="header-content">
+            <h1>🏠 Keuangan Rumah Tangga</h1>
+            <p>Sistem Informasi Pencatatan Pemasukan & Pengeluaran Keluarga</p>
+        </div>
+    </header>
+
+    <!-- ISI HALAMAN LOGOUT -->
+    <main class="container" style="text-align: center;">
+        <h2>Anda Telah Keluar (Logout)</h2>
+        
+        <div class="card-section" style="margin-bottom: 20px;">
+            <p style="margin-bottom: 10px;">Sesi akun Anda telah berhasil dihentikan dengan aman.</p>
+            <small>Seluruh catatan keuangan tetap tersimpan aman di dalam Database.</small>
+        </div>
+
+        <a href="index.html" class="btn" style="display: block; text-decoration: none;">🔑 Kembali ke Halaman Login</a>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <p>&copy; 2026 Aplikasi Catatan Keuangan Rumah Tangga</p>
+        <small>Halaman Keluar Sistem (logout.html)</small>
+    </footer>
+
+    <script>
+        // Otomatis menghapus sesi login saat halaman logout.html dibuka
+        localStorage.removeItem('sesi_login_rt');
+    </script>
+</body>
+</html>

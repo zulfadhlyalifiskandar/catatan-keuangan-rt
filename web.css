@@ -1,0 +1,343 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f4f8;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ================= HEADER & NAVIGASI ================= */
+.main-header {
+    background-color: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.header-content h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.header-content p {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin-bottom: 10px;
+}
+
+.user-badge {
+    display: inline-block;
+    background-color: #3b82f6;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    background-color: #172554;
+    padding: 10px;
+    gap: 8px;
+    margin-bottom: -10px;
+}
+
+.nav-btn {
+    background-color: transparent;
+    color: #cbd5e1;
+    border: 1px solid transparent;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.nav-btn:hover {
+    background-color: #1e40af;
+    color: white;
+}
+
+.nav-btn.active {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.logout-btn {
+    background-color: #dc2626;
+    color: white;
+}
+
+.logout-btn:hover {
+    background-color: #991b1b;
+}
+
+/* ================= CONTAINER UTAMA ================= */
+.container {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    width: 92%;
+    max-width: 550px;
+    margin: 25px auto;
+    flex: 1;
+}
+
+.sembunyi {
+    display: none !important;
+}
+
+h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+h3 {
+    color: #334155;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+/* ================= HALAMAN LOGIN ================= */
+.auth-info {
+    background-color: #eff6ff;
+    border: 1px dashed #3b82f6;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #1e3a8a;
+}
+
+.switch-auth {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.switch-auth a {
+    color: #2563eb;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn-green {
+    background-color: #16a34a !important;
+}
+
+.btn-green:hover {
+    background-color: #15803d !important;
+}
+
+/* ================= KARTU SALDO & RINGKASAN ================= */
+.balance-card {
+    background: #1e3a8a;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.balance-card h4 {
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #bfdbfe;
+}
+
+.summary-box {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.income-card, .expense-card {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    color: white;
+}
+
+.income-card {
+    background-color: #16a34a;
+}
+
+.expense-card {
+    background-color: #dc2626;
+}
+
+.income-card p, .expense-card p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.card-section {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.category-list {
+    list-style: none;
+}
+
+.category-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #cbd5e1;
+    font-size: 14px;
+}
+
+/* ================= FORMULIR INPUT ================= */
+.form-control {
+    margin-bottom: 15px;
+}
+
+.form-control label {
+    display: block;
+    margin-bottom: 6px;
+    color: #334155;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.form-control input, .form-control select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.btn:hover {
+    background-color: #1d4ed8;
+}
+
+/* ================= DAFTAR RIWAYAT ================= */
+.filter-box {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f1f5f9;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.filter-box select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+}
+
+.list {
+    list-style-type: none;
+}
+
+.list li {
+    background-color: #fff;
+    border-left: 6px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.list li.plus {
+    border-left-color: #16a34a;
+}
+
+.list li.minus {
+    border-left-color: #dc2626;
+}
+
+.info-transaksi strong {
+    display: block;
+    font-size: 15px;
+    color: #1e293b;
+}
+
+.info-transaksi small {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.nominal-transaksi {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.delete-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 5px 9px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.delete-btn:hover {
+    background-color: #b91c1c;
+}
+
+/* ================= FOOTER ================= */
+.main-footer {
+    background-color: #1e293b;
+    color: #cbd5e1;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+    font-size: 14px;
+}
+
+/* Tambahkan atau pastikan bagian .logout-btn di web.css seperti ini: */
+.logout-btn {
+    background-color: #dc2626;
+    color: white;
+    text-decoration: none;
+}
