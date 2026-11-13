@@ -6,9 +6,11 @@ if (sesiUser === null) {
 
 var dataUserAktif = JSON.parse(sesiUser);
 var infoUser = document.getElementById('info-user');
-if (infoUser) {
+if (infoUser && dataUserAktif) {
     infoUser.innerText = '👤 Login sebagai: ' + dataUserAktif.nama;
 }
+
+var API_BASE = 'http://localhost:3000';
 
 // 2. Mengambil elemen HTML di web.html
 var balance = document.getElementById('balance');
@@ -34,6 +36,14 @@ function formatRupiah(angka) {
     return Number(angka).toLocaleString('id-ID');
 }
 
+function ambilTransaksiLokal() {
+    var simpanan = localStorage.getItem('db_transaksi_rt');
+    var semuaData = simpanan ? JSON.parse(simpanan) : [];
+    return semuaData.filter(function(item) {
+        return item.pencatat === dataUserAktif.nama;
+    });
+}
+
 function pindahHalaman(namaHalaman) {
     document.getElementById('halaman-dashboard').className = 'halaman sembunyi';
     document.getElementById('halaman-input').className = 'halaman sembunyi';
@@ -47,20 +57,25 @@ function pindahHalaman(namaHalaman) {
     document.getElementById('btn-' + namaHalaman).className = 'nav-btn active';
 }
 
-// 3. Ambil Data Transaksi dari MySQL
+// 3. Ambil Data Transaksi (MySQL atau Fallback Lokal di Vercel)
 function muatDataDariDatabase() {
-    fetch('http://localhost:3000/api/transaksi?user=' + encodeURIComponent(dataUserAktif.nama))
-        .then(function(res) { return res.json(); })
+    fetch(API_BASE + '/api/transaksi?user=' + encodeURIComponent(dataUserAktif.nama))
+        .then(function(res) {
+            if (!res.ok) throw new Error('Server lokal tidak aktif');
+            return res.json();
+        })
         .then(function(data) {
             daftarTransaksi = data;
             tampilkanTampilan();
         })
-        .catch(function(err) {
-            console.log('Gagal memuat database:', err);
+        .catch(function() {
+            // Gunakan penyimpanan lokal saat dijalankan di Vercel
+            daftarTransaksi = ambilTransaksiLokal();
+            tampilkanTampilan();
         });
-}   
+}
 
-// 4. Tambah Data Transaksi ke MySQL
+// 4. Tambah Data Transaksi
 form.addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -72,6 +87,7 @@ form.addEventListener('submit', function(e) {
     }
 
     var dataBaru = {
+        id: Date.now(),
         tanggal: tanggal.value,
         jenis: jenis.value,
         kategori: kategori.value,
@@ -80,33 +96,72 @@ form.addEventListener('submit', function(e) {
         pencatat: dataUserAktif.nama
     };
 
-    fetch('http://localhost:3000/api/tambah-transaksi', {
+    fetch(API_BASE + '/api/tambah-transaksi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataBaru)
     })
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+        if (!res.ok) throw new Error('Server lokal tidak aktif');
+        return res.json();
+    })
     .then(function(hasil) {
+        simpanKeLokal(dataBaru);
         alert(hasil.pesan);
-        text.value = '';
-        amount.value = '';
-        muatDataDariDatabase();
-        pindahHalaman('riwayat');
+        selesaiInput();
+    })
+    .catch(function() {
+        simpanKeLokal(dataBaru);
+        alert('Transaksi berhasil disimpan!');
+        selesaiInput();
     });
 });
 
-// 5. Hapus Data Transaksi dari MySQL
-function removeTransaction(id) {
-    if (!confirm('Yakin ingin menghapus catatan ini dari Database MySQL?')) return;
+function simpanKeLokal(dataBaru) {
+    var simpanan = localStorage.getItem('db_transaksi_rt');
+    var semuaData = simpanan ? JSON.parse(simpanan) : [];
+    semuaData.unshift(dataBaru);
+    localStorage.setItem('db_transaksi_rt', JSON.stringify(semuaData));
+}
 
-    fetch('http://localhost:3000/api/transaksi/' + id, {
+function selesaiInput() {
+    text.value = '';
+    amount.value = '';
+    muatDataDariDatabase();
+    pindahHalaman('riwayat');
+}
+
+// 5. Hapus Data Transaksi
+function removeTransaction(id) {
+    if (!confirm('Yakin ingin menghapus catatan ini?')) return;
+
+    fetch(API_BASE + '/api/transaksi/' + id, {
         method: 'DELETE'
     })
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+        if (!res.ok) throw new Error('Server lokal tidak aktif');
+        return res.json();
+    })
     .then(function(hasil) {
+        hapusDariLokal(id);
         alert(hasil.pesan);
         muatDataDariDatabase();
+    })
+    .catch(function() {
+        hapusDariLokal(id);
+        alert('Data berhasil dihapus!');
+        muatDataDariDatabase();
     });
+}
+
+function hapusDariLokal(id) {
+    var simpanan = localStorage.getItem('db_transaksi_rt');
+    if (simpanan) {
+        var semuaData = JSON.parse(simpanan).filter(function(item) {
+            return Number(item.id) !== Number(id);
+        });
+        localStorage.setItem('db_transaksi_rt', JSON.stringify(semuaData));
+    }
 }
 
 // 6. Tampilkan Data ke Layar Web
@@ -163,7 +218,7 @@ function tampilkanTampilan() {
     }
 
     if (list.innerHTML === '') {
-        list.innerHTML = '<p style="text-align:center; color:#777; padding:15px;">Belum ada data transaksi di database MySQL.</p>';
+        list.innerHTML = '<p style="text-align:center; color:#777; padding:15px;">Belum ada data transaksi.</p>';
     }
 
     balance.innerText = 'Rp ' + formatRupiah(totalSaldo);

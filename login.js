@@ -1,3 +1,4 @@
+// Cek jika pengguna sudah login, langsung arahkan ke web.html
 if (localStorage.getItem('sesi_login_rt') !== null) {
     window.location.href = 'web.html';
 }
@@ -5,12 +6,21 @@ if (localStorage.getItem('sesi_login_rt') !== null) {
 var formLogin = document.getElementById('form-login');
 var formDaftar = document.getElementById('form-daftar');
 
-// Siapkan akun bawaan untuk mode online (Vercel)
-var dataUsersLokal = localStorage.getItem('db_users_rt');
-var usersLokal = dataUsersLokal ? JSON.parse(dataUsersLokal) : [
-    { nama: 'Keluarga Iskandar', username: 'keluarga', password: '123' }
-];
-localStorage.setItem('db_users_rt', JSON.stringify(usersLokal));
+// Menentukan URL API otomatis (mendukung localhost)
+var API_BASE = 'http://localhost:3000';
+
+// Daftar akun bawaan agar tetap bisa login di Vercel walau tanpa XAMPP
+function ambilDaftarAkunLokal() {
+    var data = localStorage.getItem('db_pengguna_rt');
+    if (!data) {
+        var akunDefault = [
+            { id: 1, nama: 'Keluarga Iskandar', username: 'admin', password: '123' }
+        ];
+        localStorage.setItem('db_pengguna_rt', JSON.stringify(akunDefault));
+        return akunDefault;
+    }
+    return JSON.parse(data);
+}
 
 function tampilkanFormDaftar(modeDaftar) {
     if (modeDaftar === true) {
@@ -24,42 +34,43 @@ function tampilkanFormDaftar(modeDaftar) {
     }
 }
 
-// 1. PROSES LOGIN
+// 1. PROSES LOGIN (Coba ke MySQL dulu, jika di Vercel/Offline otomatis pakai Database Browser)
 formLogin.addEventListener('submit', function(e) {
     e.preventDefault();
-    var inputUser = document.getElementById('login-user').value;
-    var inputPass = document.getElementById('login-pass').value;
+    var inputUser = document.getElementById('login-user').value.trim();
+    var inputPass = document.getElementById('login-pass').value.trim();
 
-    // Coba cek ke MySQL dulu (jika dijalankan di localhost laptop)
-    fetch('http://localhost:3000/api/login', {
+    fetch(API_BASE + '/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: inputUser, password: inputPass })
     })
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+        if (!res.ok) throw new Error('Respon server gagal');
+        return res.json();
+    })
     .then(function(hasil) {
         if (hasil.status === 'Sukses') {
             localStorage.setItem('sesi_login_rt', JSON.stringify(hasil.user));
-            alert('Login Berhasil (Database MySQL)! Selamat datang, ' + hasil.user.nama);
+            alert('Login Berhasil! Selamat datang, ' + hasil.user.nama);
             window.location.href = 'web.html';
         } else {
             alert(hasil.pesan);
         }
     })
     .catch(function() {
-        // Jika dibuka di Vercel (Online), otomatis periksa dari Database Browser
-        var ditemukan = null;
-        for (var i = 0; i < usersLokal.length; i++) {
-            if (usersLokal[i].username.toLowerCase() === inputUser.toLowerCase() && usersLokal[i].password === inputPass) {
-                ditemukan = usersLokal[i];
-            }
-        }
-        if (ditemukan !== null) {
-            localStorage.setItem('sesi_login_rt', JSON.stringify(ditemukan));
-            alert('Login Berhasil! Selamat datang, ' + ditemukan.nama);
+        // Fallback Otomatis untuk Vercel / Saat XAMPP tidak aktif
+        var daftarAkun = ambilDaftarAkunLokal();
+        var userKetemu = daftarAkun.find(function(u) {
+            return u.username.toLowerCase() === inputUser.toLowerCase() && u.password === inputPass;
+        });
+
+        if (userKetemu) {
+            localStorage.setItem('sesi_login_rt', JSON.stringify(userKetemu));
+            alert('Login Berhasil! Selamat datang, ' + userKetemu.nama);
             window.location.href = 'web.html';
         } else {
-            alert('Username atau Password salah!');
+            alert('Username atau Password salah! Silakan cek kembali atau Daftar Akun Baru.');
         }
     });
 });
@@ -67,34 +78,55 @@ formLogin.addEventListener('submit', function(e) {
 // 2. PROSES DAFTAR AKUN BARU
 formDaftar.addEventListener('submit', function(e) {
     e.preventDefault();
+    var namaInput = document.getElementById('daftar-nama').value.trim();
+    var userInput = document.getElementById('daftar-user').value.trim();
+    var passInput = document.getElementById('daftar-pass').value.trim();
+
     var dataAkunBaru = {
-        nama: document.getElementById('daftar-nama').value,
-        username: document.getElementById('daftar-user').value,
-        password: document.getElementById('daftar-pass').value
+        id: Date.now(),
+        nama: namaInput,
+        username: userInput,
+        password: passInput
     };
 
-    // Simpan juga ke lokal untuk cadangan di Vercel
-    usersLokal.push(dataAkunBaru);
-    localStorage.setItem('db_users_rt', JSON.stringify(usersLokal));
+    // Simpan juga di penyimpanan browser agar di Vercel langsung berfungsi
+    var daftarAkun = ambilDaftarAkunLokal();
+    var sudahAda = daftarAkun.some(function(u) {
+        return u.username.toLowerCase() === userInput.toLowerCase();
+    });
 
-    // Coba kirim ke MySQL (jika di laptop)
-    fetch('http://localhost:3000/api/daftar', {
+    if (sudahAda) {
+        alert('Username sudah dipakai! Gunakan username lain.');
+        return;
+    }
+
+    fetch(API_BASE + '/api/daftar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataAkunBaru)
     })
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+        if (!res.ok) throw new Error('Server offline');
+        return res.json();
+    })
     .then(function(hasil) {
+        daftarAkun.push(dataAkunBaru);
+        localStorage.setItem('db_pengguna_rt', JSON.stringify(daftarAkun));
         alert(hasil.pesan);
-        tampilkanFormDaftar(false);
+        resetFormDaftar();
     })
     .catch(function() {
-        // Jika di Vercel
-        alert('Akun berhasil didaftarkan ke Database! Silakan login.');
-        tampilkanFormDaftar(false);
+        // Jika dibuka di Vercel, tetap simpan akun baru dengan aman
+        daftarAkun.push(dataAkunBaru);
+        localStorage.setItem('db_pengguna_rt', JSON.stringify(daftarAkun));
+        alert('Akun berhasil dibuat! Silakan login dengan username dan password Anda.');
+        resetFormDaftar();
     });
+});
 
+function resetFormDaftar() {
     document.getElementById('daftar-nama').value = '';
     document.getElementById('daftar-user').value = '';
     document.getElementById('daftar-pass').value = '';
-});
+    tampilkanFormDaftar(false);
+}
